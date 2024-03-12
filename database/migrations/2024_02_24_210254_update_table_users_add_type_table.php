@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dues', function (Blueprint $table) {
-            $table->id();
-            $table->string('due_name');
-            $table->text('description')->nullable();
-            $table->string('amount');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('is_admin')->default('false');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('dues');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('is_admin');
+        });
     }
 };
