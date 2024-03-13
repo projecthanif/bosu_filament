@@ -2,20 +2,24 @@
 
 namespace App\Filament\User\Resources;
 
-use App\Filament\User\Resources\DueResource\Pages;
-use App\Filament\User\Resources\DueResource\RelationManagers;
 use App\Models\Due;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Columns\Summarizers\Sum;
+use App\Filament\User\Resources\DueResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\User\Resources\DueResource\RelationManagers;
 
 class DueResource extends Resource
 {
     protected static ?string $model = Due::class;
+
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -37,19 +41,26 @@ class DueResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('due_name')
+                    ->label('Due Name'),
+                TextColumn::make('amount')
+                    ->summarize([
+                        Sum::make()
+                            ->money('NGN')
+                    ])
             ])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            // ->bulkActions([
+            //     Tables\Actions\BulkActionGroup::make([
+            //         Tables\Actions\DeleteBulkAction::make(),
+            //     ]),
+            // ])
+            ->paginated(false);
     }
 
     public static function getRelations(): array

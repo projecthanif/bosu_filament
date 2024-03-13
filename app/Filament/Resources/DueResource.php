@@ -2,17 +2,16 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DueResource\Pages;
-use App\Filament\Resources\DueResource\RelationManagers;
 use App\Models\Due;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\Resource;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\Summarizers\Sum;
+use App\Filament\Resources\DueResource\Pages;
+use Filament\Forms\Components\MarkdownEditor;
 
 class DueResource extends Resource
 {
@@ -24,8 +23,18 @@ class DueResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('due_name')
+                    ->name('Due Name'),
+                TextInput::make('amount')
+                    ->name('Due Amount'),
+                MarkdownEditor::make('description')
+                    ->name('Description')->columnSpanFull()
             ]);
+    }
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()->is_admin ===  'true';
     }
     public static function table(Table $table): Table
     {
@@ -34,6 +43,11 @@ class DueResource extends Resource
                 TextColumn::make('due_name')
                     ->label('name'),
                 TextColumn::make('amount')
+                    ->summarize([
+                        Sum::make()
+                            ->money('NGN')
+
+                    ])
             ])
             ->filters([
                 //
@@ -45,7 +59,8 @@ class DueResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->paginated(false);
     }
 
     public static function getRelations(): array
