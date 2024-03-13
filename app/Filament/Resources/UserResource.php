@@ -44,7 +44,8 @@ class UserResource extends Resource
                         'false' => 'false'
                     ]),
                 TextInput::make('password')
-                    ->readOnlyOn('edit'),
+                    ->readOnlyOn('edit')
+                    ->password(),
             ]);
     }
 
